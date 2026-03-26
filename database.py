@@ -10,7 +10,7 @@ load_dotenv()
 # Настройки подключения к PostgreSQL
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:12345@localhost:5432/construction_accounting"
+    "postgresql://postgres:password@localhost:5432/construction_accounting"
 )
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
