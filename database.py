@@ -2,11 +2,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
+from dotenv import load_dotenv
+
+# Загружаем переменные из .env файла
+load_dotenv()
 
 # Настройки подключения к PostgreSQL
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://postgres:password@localhost:5432/construction_accounting"
+    "postgresql://postgres:12345@localhost:5432/construction_accounting"
 )
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
