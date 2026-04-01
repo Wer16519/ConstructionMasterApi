@@ -9,7 +9,6 @@ from routers import (
     reports_router,
     dashboard_router
 )
-
 app = FastAPI(
     title="Construction Accounting API",
     description="API для учета строительства",
@@ -33,7 +32,6 @@ app.include_router(work_orders_router)
 app.include_router(materials_router)
 app.include_router(reports_router)
 app.include_router(dashboard_router)
-
 @app.get("/")
 def root():
     return {
