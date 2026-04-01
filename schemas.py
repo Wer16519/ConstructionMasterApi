@@ -264,3 +264,226 @@ class ApiResponse(BaseModel):
     success: bool
     message: str
     data: Optional[dict] = None
+
+
+class WorkCategoryBase(BaseModel):
+    code: str
+    name: str
+    parent_category_id: Optional[int] = None
+    unit_of_measure: Optional[str] = None
+    standard_hours_per_unit: Optional[Decimal] = None
+
+
+class WorkCategoryCreate(WorkCategoryBase):
+    pass
+
+
+class WorkCategoryResponse(WorkCategoryBase):
+    category_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Work Type schemas
+class WorkTypeBase(BaseModel):
+    category_id: int
+    code: str
+    name: str
+    unit_of_measure: Optional[str] = None
+    standard_price: Optional[Decimal] = None
+    is_material_related: Optional[bool] = False
+
+
+class WorkTypeCreate(WorkTypeBase):
+    pass
+
+
+class WorkTypeResponse(WorkTypeBase):
+    work_type_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Equipment schemas
+class EquipmentBase(BaseModel):
+    code: str
+    name: str
+    equipment_type: Optional[str] = None
+    purchase_date: Optional[date] = None
+    purchase_price: Optional[Decimal] = None
+    current_value: Optional[Decimal] = None
+    status: Optional[str] = 'available'
+
+
+class EquipmentCreate(EquipmentBase):
+    pass
+
+
+class EquipmentResponse(EquipmentBase):
+    equipment_id: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class EquipmentAssignmentBase(BaseModel):
+    equipment_id: int
+    work_order_id: int
+    assignment_date: date
+    planned_return_date: Optional[date] = None
+    notes: Optional[str] = None
+
+
+class EquipmentAssignmentCreate(EquipmentAssignmentBase):
+    pass
+
+
+class EquipmentAssignmentResponse(EquipmentAssignmentBase):
+    assignment_id: int
+    actual_return_date: Optional[date] = None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Quality Control schemas
+class QualityControlBase(BaseModel):
+    object_id: int
+    work_type_id: int
+    inspection_date: date
+    inspector_name: Optional[str] = None
+    inspection_type: Optional[str] = None
+    compliance_percentage: Optional[Decimal] = Field(None, ge=0, le=100)
+    defects_found: Optional[str] = None
+    corrective_actions: Optional[str] = None
+    passed: Optional[bool] = None
+    next_inspection_date: Optional[date] = None
+
+
+class QualityControlCreate(QualityControlBase):
+    pass
+
+
+class QualityControlResponse(QualityControlBase):
+    qc_id: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Safety Report schemas
+class SafetyReportBase(BaseModel):
+    site_id: int
+    report_date: date
+    report_type: Optional[str] = None
+    incident_description: Optional[str] = None
+    severity: Optional[str] = None
+    corrective_measures: Optional[str] = None
+    reported_by: Optional[str] = None
+    closed_date: Optional[date] = None
+
+
+class SafetyReportCreate(SafetyReportBase):
+    pass
+
+
+class SafetyReportResponse(SafetyReportBase):
+    report_id: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Project Document schemas
+class ProjectDocumentBase(BaseModel):
+    object_id: int
+    document_number: str
+    document_type: Optional[str] = None
+    document_date: Optional[date] = None
+    title: Optional[str] = None
+    file_path: Optional[str] = None
+    version: Optional[int] = 1
+    approved: Optional[bool] = False
+    approved_by: Optional[str] = None
+    approval_date: Optional[date] = None
+
+
+class ProjectDocumentCreate(ProjectDocumentBase):
+    pass
+
+
+class ProjectDocumentResponse(ProjectDocumentBase):
+    document_id: int
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Project Budget schemas
+class ProjectBudgetBase(BaseModel):
+    object_id: int
+    budget_year: int
+    planned_amount: Decimal
+    actual_amount: Optional[Decimal] = 0
+    budget_category: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class ProjectBudgetCreate(ProjectBudgetBase):
+    pass
+
+
+class ProjectBudgetResponse(ProjectBudgetBase):
+    budget_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Construction Stage schemas
+class ConstructionStageBase(BaseModel):
+    object_id: int
+    stage_code: str
+    stage_name: str
+    stage_order: int
+    planned_start_date: Optional[date] = None
+    planned_end_date: Optional[date] = None
+    actual_start_date: Optional[date] = None
+    actual_end_date: Optional[date] = None
+    stage_status: Optional[str] = 'planned'
+
+
+class ConstructionStageCreate(ConstructionStageBase):
+    pass
+
+
+class ConstructionStageResponse(ConstructionStageBase):
+    stage_id: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# Material Issue schemas
+class MaterialIssueBase(BaseModel):
+    requisition_id: int
+    material_id: int
+    issued_quantity: Decimal
+    issue_date: date
+    issued_by: Optional[str] = None
+    received_by: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class MaterialIssueCreate(MaterialIssueBase):
+    pass
+
+
+class MaterialIssueResponse(MaterialIssueBase):
+    issue_id: int
+    issue_number: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)

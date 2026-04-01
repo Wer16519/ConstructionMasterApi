@@ -156,3 +156,148 @@ class DailyReport(Base):
     materials_used = Column(Text)
     created_by = Column(String(100))
     created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class WorkCategory(Base):
+    __tablename__ = "work_categories"
+
+    category_id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(20), unique=True, nullable=False)
+    name = Column(String(100), nullable=False)
+    parent_category_id = Column(Integer, ForeignKey("work_categories.category_id"))
+    unit_of_measure = Column(String(20))
+    standard_hours_per_unit = Column(Numeric(8, 2))
+
+
+class WorkType(Base):
+    __tablename__ = "work_types"
+
+    work_type_id = Column(Integer, primary_key=True, index=True)
+    category_id = Column(Integer, ForeignKey("work_categories.category_id"))
+    code = Column(String(20), unique=True, nullable=False)
+    name = Column(String(200), nullable=False)
+    unit_of_measure = Column(String(20))
+    standard_price = Column(Numeric(12, 2))
+    is_material_related = Column(Boolean, default=False)
+
+
+class Equipment(Base):
+    __tablename__ = "equipment"
+
+    equipment_id = Column(Integer, primary_key=True, index=True)
+    code = Column(String(20), unique=True, nullable=False)
+    name = Column(String(200), nullable=False)
+    equipment_type = Column(String(50))
+    purchase_date = Column(Date)
+    purchase_price = Column(Numeric(12, 2))
+    current_value = Column(Numeric(12, 2))
+    status = Column(String(20), default='available')
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class EquipmentAssignment(Base):
+    __tablename__ = "equipment_assignments"
+
+    assignment_id = Column(Integer, primary_key=True, index=True)
+    equipment_id = Column(Integer, ForeignKey("equipment.equipment_id"))
+    work_order_id = Column(Integer, ForeignKey("work_orders.work_order_id"))
+    assignment_date = Column(Date, nullable=False)
+    planned_return_date = Column(Date)
+    actual_return_date = Column(Date)
+    notes = Column(Text)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class QualityControl(Base):
+    __tablename__ = "quality_control"
+
+    qc_id = Column(Integer, primary_key=True, index=True)
+    object_id = Column(Integer, ForeignKey("building_objects.object_id"))
+    work_type_id = Column(Integer, ForeignKey("work_types.work_type_id"))
+    inspection_date = Column(Date, nullable=False)
+    inspector_name = Column(String(100))
+    inspection_type = Column(String(50))
+    compliance_percentage = Column(Numeric(5, 2))
+    defects_found = Column(Text)
+    corrective_actions = Column(Text)
+    passed = Column(Boolean)
+    next_inspection_date = Column(Date)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class SafetyReport(Base):
+    __tablename__ = "safety_reports"
+
+    report_id = Column(Integer, primary_key=True, index=True)
+    site_id = Column(Integer, ForeignKey("construction_sites.site_id"))
+    report_date = Column(Date, nullable=False)
+    report_type = Column(String(50))
+    incident_description = Column(Text)
+    severity = Column(String(20))
+    corrective_measures = Column(Text)
+    reported_by = Column(String(100))
+    closed_date = Column(Date)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class ProjectDocument(Base):
+    __tablename__ = "project_documents"
+
+    document_id = Column(Integer, primary_key=True, index=True)
+    object_id = Column(Integer, ForeignKey("building_objects.object_id"))
+    document_number = Column(String(50), unique=True, nullable=False)
+    document_type = Column(String(50))
+    document_date = Column(Date)
+    title = Column(String(200))
+    file_path = Column(Text)
+    version = Column(Integer, default=1)
+    approved = Column(Boolean, default=False)
+    approved_by = Column(String(100))
+    approval_date = Column(Date)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+
+
+class ProjectBudget(Base):
+    __tablename__ = "project_budget"
+
+    budget_id = Column(Integer, primary_key=True, index=True)
+    object_id = Column(Integer, ForeignKey("building_objects.object_id"))
+    budget_year = Column(Integer, nullable=False)
+    planned_amount = Column(Numeric(12, 2), nullable=False)
+    actual_amount = Column(Numeric(12, 2), default=0)
+    budget_category = Column(String(50))
+    notes = Column(Text)
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+
+class ConstructionStage(Base):
+    __tablename__ = "construction_stages"
+
+    stage_id = Column(Integer, primary_key=True, index=True)
+    object_id = Column(Integer, ForeignKey("building_objects.object_id"))
+    stage_code = Column(String(50), unique=True, nullable=False)
+    stage_name = Column(String(200), nullable=False)
+    stage_order = Column(Integer, nullable=False)
+    planned_start_date = Column(Date)
+    planned_end_date = Column(Date)
+    actual_start_date = Column(Date)
+    actual_end_date = Column(Date)
+    stage_status = Column(String(20), default='planned')
+    created_at = Column(TIMESTAMP, server_default=func.now())
+    updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())
+
+
+class MaterialIssue(Base):
+    __tablename__ = "material_issues"
+
+    issue_id = Column(Integer, primary_key=True, index=True)
+    issue_number = Column(String(50), unique=True, nullable=False)
+    requisition_id = Column(Integer, ForeignKey("material_requisitions.requisition_id"))
+    material_id = Column(Integer, ForeignKey("materials.material_id"))
+    issued_quantity = Column(Numeric(12, 2), nullable=False)
+    issue_date = Column(Date, nullable=False)
+    issued_by = Column(String(100))
+    received_by = Column(String(100))
+    notes = Column(Text)
+    created_at = Column(TIMESTAMP, server_default=func.now())
